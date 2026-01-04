@@ -1,2 +1,19 @@
-# Hoxon-Alpha
-Complete Pine Script Strategy for TradingView Strategy Overview This is a comprehensive short-term swing trading strategy designed for TradingView's Pine Script platform. The strategy employs a multi-indicator approach to identify precise entry and exit points for "buy low, sell high" opportunities in financial markets.
+Hoxon-Alpha Trading Strategy
+📈 Strategy Overview
+Hoxon-Alpha is a sophisticated short-term swing trading strategy for TradingView that implements a multi-indicator approach to capture precise market reversals. Designed for quick profit-taking through "buy low, sell high" and "sell high, buy low" opportunities.
+
+https://img.shields.io/badge/Pine-Script%2520v5-blue
+https://img.shields.io/badge/Platform-TradingView-green
+https://img.shields.io/badge/License-MIT-yellow
+✨ Key Features
+Multi-Layer Confirmation: 3+ indicator alignment for high-probability signals
+
+Dynamic Support/Resistance: Real-time level detection
+
+Volume-Confirmed Entries: Eliminates false breakouts
+
+Adaptive Risk Management: Adjustable stop-loss and take-profit
+
+Visual Signal Alerts: Clear buy/sell markers on chart
+
+Professional Dashboard: Integrated strategy information panel on tradingview
