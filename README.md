@@ -2,9 +2,6 @@ Hoxon-Alpha Trading Strategy
 📈 Strategy Overview
 Hoxon-Alpha is a sophisticated short-term swing trading strategy for TradingView that implements a multi-indicator approach to capture precise market reversals. Designed for quick profit-taking through "buy low, sell high" and "sell high, buy low" opportunities.
 
-https://img.shields.io/badge/Pine-Script%2520v5-blue
-https://img.shields.io/badge/Platform-TradingView-green
-https://img.shields.io/badge/License-MIT-yellow
 ✨ Key Features
 Multi-Layer Confirmation: 3+ indicator alignment for high-probability signals
 
