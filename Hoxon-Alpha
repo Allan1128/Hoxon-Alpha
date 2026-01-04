@@ -1,0 +1,96 @@
+//@version=5
+// This strategy is designed for short-term high-probability reversal signals
+// Strategy: Short-term Swing - Buy Low, Sell High
+// Developer: HoxonAllan
+// OKX Invite Link: https://www.growthnode.systems/join/59892411
+// X: HoxonAllan
+
+strategy(title="Short-Term Swing Reversal Strategy", shorttitle="ST Swing", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10, commission_type=strategy.commission.percent, commission_value=0.1)
+
+// Input Parameters
+fastLength = input.int(9, "Fast MA Length", minval=1)
+slowLength = input.int(21, "Slow MA Length", minval=1)
+rsiLength = input.int(14, "RSI Length", minval=1)
+rsiOverbought = input.int(70, "RSI Overbought", minval=50, maxval=100)
+rsiOversold = input.int(30, "RSI Oversold", minval=0, maxval=50)
+bbLength = input.int(20, "Bollinger Bands Length")
+bbStdDev = input.float(2.0, "Bollinger Bands Std Dev", step=0.1)
+
+// Calculate Indicators
+fastMA = ta.sma(close, fastLength)
+slowMA = ta.sma(close, slowLength)
+rsiValue = ta.rsi(close, rsiLength)
+
+// Bollinger Bands
+bbBasis = ta.sma(close, bbLength)
+bbDev = bbStdDev * ta.stdev(close, bbLength)
+bbUpper = bbBasis + bbDev
+bbLower = bbBasis - bbDev
+
+// Volume Analysis
+volumeAvg = ta.sma(volume, 20)
+volumeSpike = volume > volumeAvg * 1.5
+
+// Support and Resistance
+recentHigh = ta.highest(high, 10)
+recentLow = ta.lowest(low, 10)
+atResistance = close >= recentHigh * 0.995
+atSupport = close <= recentLow * 1.005
+
+// Buy Conditions (Low Buy - Buy Low, Sell High)
+buyCondition1 = rsiValue < rsiOversold and close < bbLower // Oversold + Below BB Lower
+buyCondition2 = ta.crossover(fastMA, slowMA) and rsiValue < 50 // MA Crossover + RSI not overbought
+buyCondition3 = atSupport and volumeSpike and close > open // Support with volume confirmation
+buySignal = (buyCondition1 or buyCondition2) and buyCondition3
+
+// Sell Conditions (High Sell - High Sell, Low Buy)
+sellCondition1 = rsiValue > rsiOverbought and close > bbUpper // Overbought + Above BB Upper
+sellCondition2 = ta.crossunder(fastMA, slowMA) and rsiValue > 50 // MA Crossunder + RSI not oversold
+sellCondition3 = atResistance and volumeSpike and close < open // Resistance with volume confirmation
+sellSignal = (sellCondition1 or sellCondition2) and sellCondition3
+
+// Stop Loss and Take Profit
+stopLossPercent = input.float(1.5, "Stop Loss %", step=0.1) / 100
+takeProfitPercent = input.float(3.0, "Take Profit %", step=0.1) / 100
+
+longStopPrice = strategy.position_avg_price * (1 - stopLossPercent)
+longTakeProfit = strategy.position_avg_price * (1 + takeProfitPercent)
+shortStopPrice = strategy.position_avg_price * (1 + stopLossPercent)
+shortTakeProfit = strategy.position_avg_price * (1 - takeProfitPercent)
+
+// Strategy Execution
+if buySignal
+    strategy.entry("Buy", strategy.long)
+    strategy.exit("Buy Exit", "Buy", stop=longStopPrice, limit=longTakeProfit)
+
+if sellSignal
+    strategy.entry("Sell", strategy.short)
+    strategy.exit("Sell Exit", "Sell", stop=shortStopPrice, limit=shortTakeProfit)
+
+// Plotting
+plot(fastMA, color=color.blue, linewidth=2, title="Fast MA")
+plot(slowMA, color=color.red, linewidth=2, title="Slow MA")
+plot(bbUpper, color=color.gray, title="BB Upper")
+plot(bbLower, color=color.gray, title="BB Lower")
+plot(bbBasis, color=color.orange, title="BB Middle")
+
+// Background Colors for RSI Levels
+bgcolor(rsiValue >= rsiOverbought ? color.new(color.red, 90) : rsiValue <= rsiOversold ? color.new(color.green, 90) : na)
+
+// Plot Shapes for Signals
+plotshape(buySignal, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, title="Buy Signal")
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, title="Sell Signal")
+
+// Alerts
+alertcondition(buySignal, title="Buy Alert", message="Buy signal triggered")
+alertcondition(sellSignal, title="Sell Alert", message="Sell signal triggered")
+
+// Strategy Info
+var table infoTable = table.new(position.top_right, 2, 3, border_width=1)
+if barstate.islast
+    table.cell(infoTable, 0, 0, "Strategy: Short-Term Swing", bgcolor=color.blue)
+    table.cell(infoTable, 0, 1, "Developer: HoxonAllan", bgcolor=color.gray)
+    table.cell(infoTable, 0, 2, "X/Twitter: @HoxonAllan", bgcolor=color.gray)
+    table.cell(infoTable, 1, 0, "OKX Invite:", bgcolor=color.gray)
+    table.cell(infoTable, 1, 1, "growthnode.systems", bgcolor=color.gray)
+    table.cell(infoTable, 1, 2, "Join Code: 59892411", bgcolor=color.gray)
